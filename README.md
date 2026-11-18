@@ -4,7 +4,7 @@
 [![rank](https://make.fun/badge/news-image-20261118/bigwin5758/news-image-20261118/rank.svg)](https://make.fun/bounty/news-image-20261118/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261118)
 [![reward](https://make.fun/badge/news-image-20261118/bigwin5758/news-image-20261118/reward.svg)](https://make.fun/bounty/news-image-20261118?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261118)
 
-One image summing up the world's news of **Wednesday, 18 November 2026** — a newspaper front page with the day's six most consequential stories: Ukraine's second strike on the Kerch bridge (its road arch fell into the strait, in the war's biggest drone attack), Iran's drones against a US radar base in Bahrain and the US strike back on Qeshm Island, Trump's Quad meeting in Manila and his flight to APEC in Shenzhen, Cyclone Akvan strengthening over the Bay of Bengal, MS Dhoni ending his IPL playing career, and Amazon's $7bn bet on India's green energy — plus a ticker of the day's other headlines.
+One image summing up the world's news of **Wednesday, 18 November 2026** — a dense newspaper front page with **31 stories**: the Kerch bridge falling in the war's biggest drone attack (hero), then 30 more across war &amp; diplomacy, economy &amp; tech, and world &amp; sport — Iran's drones on a US base in Bahrain, Trump's Quad talks in Manila, Nvidia's $115.8bn quarter, Voyager 1 reaching one light-day from Earth, Cyclone Akvan, Dhoni's IPL farewell, and more — plus a world map with pins marking where the day happened, an "also" ticker, and a source footer (AP, Reuters, BBC, Al Jazeera, FT, Times of India, ANI, Arab News, NASA, Ars Technica, TechCrunch, The Guardian).
 
 ## Run it
 

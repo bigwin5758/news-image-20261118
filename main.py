@@ -2,15 +2,38 @@
 
 The program ships with its image (entry.png) and simply copies it to
 $MAKEFUN_OUTPUT_DIR (or /output) as entry.png. Deterministic: the same
-bytes come out on every run. After copying it checks the output file
-is there and the same size as the source, so a truncated write fails
+bytes come out on every run. After copying it verifies the output
+four ways -- same byte size, same SHA-256 digest, a valid PNG
+signature, and the expected 1024x1024 dimensions read from the IHDR
+chunk -- so a truncated, corrupted, or wrongly-sized write fails
 loudly instead of shipping a broken image.
 """
 
+import hashlib
 import os
 import shutil
 import sys
 from pathlib import Path
+
+PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+
+
+def sha256_of(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def png_dimensions(path: Path) -> tuple[int, int]:
+    """Read (width, height) from a PNG file's IHDR chunk."""
+    header = path.read_bytes()[:33]
+    if len(header) < 33 or header[12:16] != b"IHDR":
+        raise ValueError(f"{path} has no IHDR chunk")
+    width = int.from_bytes(header[16:20], "big")
+    height = int.from_bytes(header[20:24], "big")
+    return width, height
 
 
 def main() -> int:
@@ -18,12 +41,32 @@ def main() -> int:
     if not source.is_file():
         print(f"error: {source} not found", file=sys.stderr)
         return 1
+    if source.read_bytes()[:8] != PNG_MAGIC:
+        print(f"error: {source} is not a PNG file", file=sys.stderr)
+        return 1
+    try:
+        width, height = png_dimensions(source)
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    if (width, height) != (1024, 1024):
+        print(f"error: {source} is {width}x{height}, expected 1024x1024",
+              file=sys.stderr)
+        return 1
     out_dir = Path(os.environ.get("MAKEFUN_OUTPUT_DIR") or "/output")
     out_dir.mkdir(parents=True, exist_ok=True)
     dest = out_dir / "entry.png"
     shutil.copyfile(source, dest)
     if dest.stat().st_size != source.stat().st_size:
         print("error: copied entry.png is not the same size as the source",
+              file=sys.stderr)
+        return 1
+    if sha256_of(dest) != sha256_of(source):
+        print("error: copied entry.png has a different SHA-256 than the source",
+              file=sys.stderr)
+        return 1
+    if dest.read_bytes()[:8] != PNG_MAGIC:
+        print("error: copied entry.png does not start with a PNG signature",
               file=sys.stderr)
         return 1
     return 0
