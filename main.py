@@ -2,11 +2,12 @@
 
 The program ships with its image (entry.png) and simply copies it to
 $MAKEFUN_OUTPUT_DIR (or /output) as entry.png. Deterministic: the same
-bytes come out on every run. After copying it verifies the output
-four ways -- same byte size, same SHA-256 digest, a valid PNG
-signature, and the expected 1024x1024 dimensions read from the IHDR
-chunk -- so a truncated, corrupted, or wrongly-sized write fails
-loudly instead of shipping a broken image.
+bytes come out on every run. Before copying it validates the source
+five ways -- a valid PNG signature, the expected 1024x1024 dimensions
+read from the IHDR chunk, and a file size within the competition's
+1 MiB limit -- and after copying it re-checks the output (size,
+SHA-256 digest, PNG signature, dimensions) so a truncated, corrupted,
+or wrongly-sized write fails loudly instead of shipping a broken image.
 """
 
 import hashlib
@@ -16,6 +17,7 @@ import sys
 from pathlib import Path
 
 PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+MAX_BYTES = 1_048_576  # competition limit: image must be at most 1 MiB
 
 
 def sha256_of(path: Path) -> str:
@@ -53,6 +55,10 @@ def main() -> int:
         print(f"error: {source} is {width}x{height}, expected 1024x1024",
               file=sys.stderr)
         return 1
+    if source.stat().st_size > MAX_BYTES:
+        print(f"error: {source} is {source.stat().st_size} bytes, "
+              f"over the {MAX_BYTES}-byte limit", file=sys.stderr)
+        return 1
     out_dir = Path(os.environ.get("MAKEFUN_OUTPUT_DIR") or "/output")
     out_dir.mkdir(parents=True, exist_ok=True)
     dest = out_dir / "entry.png"
@@ -69,6 +75,17 @@ def main() -> int:
         print("error: copied entry.png does not start with a PNG signature",
               file=sys.stderr)
         return 1
+    try:
+        out_width, out_height = png_dimensions(dest)
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    if (out_width, out_height) != (1024, 1024):
+        print(f"error: copied entry.png is {out_width}x{out_height}, "
+              "expected 1024x1024", file=sys.stderr)
+        return 1
+    print(f"wrote {dest} ({dest.stat().st_size} bytes, "
+          f"sha256 {sha256_of(dest)[:16]}...)")
     return 0
 
 
