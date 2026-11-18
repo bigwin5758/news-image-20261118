@@ -11,11 +11,15 @@ truncated, corrupted, or wrongly-sized write fails loudly instead of
 shipping a broken image.
 
 The image is the "WORLD NEWS DAILY" front page for Wednesday
-18 November 2026 (683x1024, palette PNG): six photo stories, a
-"GLOBAL NEWS MAP" with numbered pins, and a source footer. The
-Asia-Pacific photo is the real AFP Quad meeting shot from Manila
-(17 Nov 2026) showing Trump at the centre -- it replaces the
-Biden photo the first draft of this design carried.
+18 November 2026 (683x1024, palette PNG): "50 STORIES IN ONE
+EDITION" -- three photo highlights on top (Trump heads to China
+for talks with Xi and Putin; Ukraine strikes the Kerch bridge;
+Nvidia's $115.84bn quarter) plus 47 numbered stories in six
+category sections (Politics & Diplomacy, War & Security, Markets
+& Economy, Technology & Science, Asia-Pacific & Society, Climate
+& Environment), a world map with numbered pins and a "KEY
+REGIONS" legend, and a source footer (AP, Reuters, BBC, FT,
+Bernama).
 """
 
 import hashlib
@@ -28,7 +32,7 @@ PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 MAX_BYTES = 1_048_576  # competition limit: image must be at most 1 MiB
 EXPECTED_DIMS = (683, 1024)  # width x height of entry.png
 EXPECTED_SHA256 = (
-    "5b0b6230fc2a54b96fc564913e90ae18d65385c2091b8724f7ba90ef42e6018c"
+    "56b4a086dfb6e8abcd30f6264d6dcf915ceacaa12e13d0dcf5d6625db292a2c4"
 )
 
 
