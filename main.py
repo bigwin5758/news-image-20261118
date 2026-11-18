@@ -3,11 +3,19 @@
 The program ships with its image (entry.png) and simply copies it to
 $MAKEFUN_OUTPUT_DIR (or /output) as entry.png. Deterministic: the same
 bytes come out on every run. Before copying it validates the source
-five ways -- a valid PNG signature, the expected 1024x1024 dimensions
-read from the IHDR chunk, and a file size within the competition's
-1 MiB limit -- and after copying it re-checks the output (size,
-SHA-256 digest, PNG signature, dimensions) so a truncated, corrupted,
-or wrongly-sized write fails loudly instead of shipping a broken image.
+five ways -- a valid PNG signature, the expected 683x1024 dimensions
+read from the IHDR chunk, the expected SHA-256 digest, and a file size
+within the competition's 1 MiB limit -- and after copying it re-checks
+the output (size, SHA-256 digest, PNG signature, dimensions) so a
+truncated, corrupted, or wrongly-sized write fails loudly instead of
+shipping a broken image.
+
+The image is the "WORLD NEWS DAILY" front page for Wednesday
+18 November 2026 (683x1024, palette PNG): six photo stories, a
+"GLOBAL NEWS MAP" with numbered pins, and a source footer. The
+Asia-Pacific photo is the real AFP Quad meeting shot from Manila
+(17 Nov 2026) showing Trump at the centre -- it replaces the
+Biden photo the first draft of this design carried.
 """
 
 import hashlib
@@ -18,6 +26,10 @@ from pathlib import Path
 
 PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 MAX_BYTES = 1_048_576  # competition limit: image must be at most 1 MiB
+EXPECTED_DIMS = (683, 1024)  # width x height of entry.png
+EXPECTED_SHA256 = (
+    "5b0b6230fc2a54b96fc564913e90ae18d65385c2091b8724f7ba90ef42e6018c"
+)
 
 
 def sha256_of(path: Path) -> str:
@@ -51,8 +63,13 @@ def main() -> int:
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
-    if (width, height) != (1024, 1024):
-        print(f"error: {source} is {width}x{height}, expected 1024x1024",
+    if (width, height) != EXPECTED_DIMS:
+        print(f"error: {source} is {width}x{height}, "
+              f"expected {EXPECTED_DIMS[0]}x{EXPECTED_DIMS[1]}",
+              file=sys.stderr)
+        return 1
+    if sha256_of(source) != EXPECTED_SHA256:
+        print(f"error: {source} SHA-256 does not match the expected digest",
               file=sys.stderr)
         return 1
     if source.stat().st_size > MAX_BYTES:
@@ -80,9 +97,10 @@ def main() -> int:
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
-    if (out_width, out_height) != (1024, 1024):
+    if (out_width, out_height) != EXPECTED_DIMS:
         print(f"error: copied entry.png is {out_width}x{out_height}, "
-              "expected 1024x1024", file=sys.stderr)
+              f"expected {EXPECTED_DIMS[0]}x{EXPECTED_DIMS[1]}",
+              file=sys.stderr)
         return 1
     print(f"wrote {dest} ({dest.stat().st_size} bytes, "
           f"sha256 {sha256_of(dest)[:16]}...)")
