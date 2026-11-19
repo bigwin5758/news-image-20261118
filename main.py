@@ -11,10 +11,10 @@ truncated, corrupted, or wrongly-sized write fails loudly instead of
 shipping a broken image.
 
 The image is the "WORLD NEWS DAILY" front page for Wednesday
-18 November 2026 (683x1024, palette PNG): "50 STORIES IN ONE
+18 November 2026 (683x1024, palette PNG): "30 STORIES IN ONE
 EDITION" -- three photo highlights on top (Trump heads to China
 for talks with Xi and Putin; Ukraine strikes the Kerch bridge;
-Nvidia's $115.84bn quarter) plus 47 numbered stories in six
+Nvidia's $115.84bn quarter) plus 27 numbered stories in six
 category sections (Politics & Diplomacy, War & Security, Markets
 & Economy, Technology & Science, Asia-Pacific & Society, Climate
 & Environment), a world map with numbered pins and a "KEY
@@ -32,7 +32,7 @@ PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 MAX_BYTES = 1_048_576  # competition limit: image must be at most 1 MiB
 EXPECTED_DIMS = (683, 1024)  # width x height of entry.png
 EXPECTED_SHA256 = (
-    "56b4a086dfb6e8abcd30f6264d6dcf915ceacaa12e13d0dcf5d6625db292a2c4"
+    "efdabbf0562ab0fa812864d9be929883433ddfa61ceddd268f338c2007995bdf"
 )
 
 
